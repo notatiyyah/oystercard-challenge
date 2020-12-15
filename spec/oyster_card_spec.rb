@@ -23,4 +23,20 @@ describe OysterCard do
         oyster.deduct(5)
         expect(oyster.balance).to eq 0
     end
+
+    it "sets 'in_journey' to false when instantiated" do
+        expect(oyster.in_journey).to eq false
+    end
+
+    it 'sets in_journey to true when the user touches in' do
+        oyster.touch_in
+        expect(oyster.in_journey).to eq true
+    end
+
+    it "sets in_journey to true then false when user touches in and out" do
+        oyster.touch_in
+        expect(oyster.in_journey).to eq true
+        oyster.touch_out
+        expect(oyster.in_journey).to eq false
+    end
 end
