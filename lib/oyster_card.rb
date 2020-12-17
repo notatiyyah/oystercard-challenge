@@ -14,10 +14,6 @@ class OysterCard
         @balance += money
     end
 
-    def deduct(money)
-        @balance -= money
-    end
-
     def touch_in
         raise "Insufficient funds for journey, please top up card" if @balance < 1
         @in_journey = true
@@ -30,6 +26,12 @@ class OysterCard
 
     def in_journey?
         @in_journey
+    end
+
+    private
+
+    def deduct(money)
+        @balance -= money
     end
 
 end
