@@ -34,7 +34,7 @@ describe OysterCard do
         oyster.top_up(20)
         oyster.touch_in(station)
         expect(oyster).to be_in_journey
-        oyster.touch_out
+        oyster.touch_out(station)
         expect(oyster).not_to be_in_journey
     end
 
@@ -45,7 +45,7 @@ describe OysterCard do
     it "deducts £1 for trip when user touches out" do
         oyster.top_up(20)
         oyster.touch_in(station)
-        expect { oyster.touch_out }.to change{ oyster.balance }.by(-1)
+        expect { oyster.touch_out(station) }.to change{ oyster.balance }.by(-1)
     end
 
     it "saves the station touched in at in entry_station attribute" do
@@ -57,7 +57,18 @@ describe OysterCard do
     it "resets entry_station on touch out" do
         oyster.top_up(20)
         oyster.touch_in(station)
-        oyster.touch_out
+        oyster.touch_out(station)
         expect(oyster.entry_station).to eq nil
+    end
+
+    it "saves user journey into 'journeys' array" do
+        entry_point = double("entry")
+        exit_point = double("exit")
+        oyster.top_up(20)
+        oyster.touch_in(entry_point)
+        oyster.touch_out(exit_point)
+        journey = oyster.journeys[0]
+        expect(journey["entry_point"]).to eq entry_point
+        expect(journey["exit_point"]).to eq exit_point
     end
 end
