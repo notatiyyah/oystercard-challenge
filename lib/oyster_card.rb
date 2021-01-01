@@ -15,27 +15,23 @@ class OysterCard
 
     def touch_in(station)
         raise "Insufficient funds for journey, please top up card" if @balance < 1
-        @entry_station = station
+        @current_journey = Journey.new(station)
     end
 
     def touch_out(station)
-        save_journey(station)
+        @journeys << @current_journey.end_journey(station)
         deduct(1)
-        @entry_station = nil
+        @current_journey = nil
     end
 
     def in_journey?
-        @entry_station != nil
+        not @current_journey.nil?
     end
 
     private
 
     def deduct(money)
         @balance -= money
-    end
-
-    def save_journey(exit_station)
-        journeys << {"entry_point" => @entry_station, "exit_point" => exit_station}
     end
 
 end

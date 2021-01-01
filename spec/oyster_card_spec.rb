@@ -20,11 +20,11 @@ describe OysterCard do
         expect { oyster.top_up(91) }.to raise_error("Exceeded max balance limit")
     end
 
-    it "sets 'in_journey' to false when instantiated" do
+    it "is not 'in_journey' when instantiated" do
         expect(oyster).not_to be_in_journey
     end
 
-    it 'sets in_journey to true when the user touches in' do
+    it 'is in_journey when the user touches in' do
         oyster.top_up(20)
         oyster.touch_in(station)
         expect(oyster).to be_in_journey
@@ -46,19 +46,6 @@ describe OysterCard do
         oyster.top_up(20)
         oyster.touch_in(station)
         expect { oyster.touch_out(station) }.to change{ oyster.balance }.by(-1)
-    end
-
-    it "saves the station touched in at in entry_station attribute" do
-        oyster.top_up(20)
-        oyster.touch_in(station)
-        expect(oyster.entry_station).to eq station
-    end
-
-    it "resets entry_station on touch out" do
-        oyster.top_up(20)
-        oyster.touch_in(station)
-        oyster.touch_out(station)
-        expect(oyster.entry_station).to eq nil
     end
 
     it "saves user journey into 'journeys' array" do
