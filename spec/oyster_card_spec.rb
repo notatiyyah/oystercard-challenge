@@ -3,6 +3,7 @@ require "oyster_card"
 describe OysterCard do
     let(:oyster) {OysterCard.new}
     let(:station) { double("station") }
+    let(:journey) { double("journey") }
 
     it { is_expected.to respond_to(:balance) }
     it { is_expected.to respond_to(:top_up) }
@@ -44,7 +45,9 @@ describe OysterCard do
 
     it "deducts £1 for trip when user touches out" do
         oyster.top_up(20)
-        oyster.touch_in(station)
+        oyster.touch_in(station, journey)
+        allow(journey).to receive(:end_journey)
+        allow(journey).to receive(:fare) { 1 }
         expect { oyster.touch_out(station) }.to change{ oyster.balance }.by(-1)
     end
 
@@ -52,7 +55,9 @@ describe OysterCard do
         entry_point = double("entry")
         exit_point = double("exit")
         oyster.top_up(20)
-        oyster.touch_in(entry_point)
+        oyster.touch_in(entry_point, journey)
+        allow(journey).to receive(:end_journey) { {"entry_point" => entry_point, "exit_point" => exit_point} }
+        allow(journey).to receive(:fare) { 1 }
         oyster.touch_out(exit_point)
         journey = oyster.journeys[0]
         expect(journey["entry_point"]).to eq entry_point
