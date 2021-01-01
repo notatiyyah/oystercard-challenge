@@ -58,4 +58,16 @@ describe OysterCard do
         expect(journey["entry_point"]).to eq entry_point
         expect(journey["exit_point"]).to eq exit_point
     end
+
+    it "charges penalty charge of 6 if touch_out without touch_in" do
+        oyster.top_up(20)
+        expect { oyster.touch_out(station) }.to change{ oyster.balance }.by(-6)
+    end
+
+    it "adds journey with blank entry station if touch out without touch in" do
+        oyster.top_up(20)
+        oyster.touch_out(station)
+        journey = oyster.journeys[0]
+        expect(journey["entry_point"]).to eq nil
+    end
 end

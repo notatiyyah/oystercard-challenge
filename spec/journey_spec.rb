@@ -22,4 +22,9 @@ describe Journey do
         expect(total_journey["entry_point"]).to eq entry_point
         expect(total_journey["exit_point"]).to eq exit_point
     end
+
+    it "returns minimum fare if journey started and ended" do
+        journey.end_journey(station)
+        expect(journey.fare).to eq 1
+    end
 end
