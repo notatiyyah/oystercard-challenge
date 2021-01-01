@@ -2,7 +2,7 @@ require 'journey'
 
 describe Journey do
     let(:station) { double("station") }
-    let(:journey) {Journey.new(station)}
+    let(:journey) { Journey.new(station) }
     
     it "is is 'in_journey' when instantiated" do
         expect(journey).to be_in_journey
