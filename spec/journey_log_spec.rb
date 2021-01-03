@@ -2,7 +2,7 @@ require 'journey_log'
 
 describe JourneyLog do
     let(:log) { JourneyLog.new }
-    let(:station) { double("station") }
+    let(:station) { double("station", :zone => 1) }
   
     it { is_expected.to respond_to(:journeys) }
 
@@ -29,8 +29,8 @@ describe JourneyLog do
     end
 
     it "saves user journey into 'journeys' array" do
-        entry_point = double("entry")
-        exit_point = double("exit")
+        entry_point =  double("entry", :zone => 1) 
+        exit_point =  double("exit", :zone => 1) 
         log.start(entry_point)
         log.finish(exit_point)
         expect(log.last_journey["entry_point"]).to eq entry_point
@@ -49,4 +49,5 @@ describe JourneyLog do
         log.finish(station)
         expect(log.last_journey["entry_point"]).to eq station
     end
+
 end

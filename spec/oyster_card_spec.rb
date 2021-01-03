@@ -2,7 +2,7 @@ require "oyster_card"
 
 describe OysterCard do
     let(:oyster) { OysterCard.new }
-    let(:station) { double("station") }
+    let(:station) { double("station", :zone => 1) }
     let(:empty_oyster) { OysterCard.new }
 
     before do

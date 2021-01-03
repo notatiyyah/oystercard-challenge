@@ -7,7 +7,10 @@ class JourneyLog
     end
 
     def start(station, journey=nil)
-        save_and_reset(station) unless @current_journey.nil?
+        if in_journey?
+            Journey.new(station)
+            save_and_reset
+        end
         @current_journey = (journey.nil? ? Journey.new(station) : journey.new(station))
     end
 
@@ -15,7 +18,7 @@ class JourneyLog
         @current_journey = Journey.new if @current_journey.nil?
         # creates a new journey if journey 'finishes' without starting
         @current_journey.end_journey(station)
-        save_and_reset(station)
+        save_and_reset
     end
 
     def in_journey?
@@ -28,14 +31,8 @@ class JourneyLog
 
     private
 
-    def generate_journey
-        {"entry_point" => @current_journey.entry_station, 
-        "exit_point" => @current_journey.exit_station, 
-        "fare" => @current_journey.fare}
-    end
-
-    def save_and_reset(station)
-        @journeys << generate_journey
+    def save_and_reset
+        @journeys << @current_journey.generate_journey
         @current_journey = nil
     end
 
