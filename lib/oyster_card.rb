@@ -1,13 +1,15 @@
+require "journey_log"
+
 class OysterCard
-    attr_reader :balance, :journeys
+    attr_reader :balance
 
     @@MAX_BALANCE = 90
     @@MIN_BALANCE = 1
     @@PENALTY_CHARGE = 6
 
-    def initialize
+    def initialize(log=nil)
         @balance = 0
-        @journeys = []
+        @journey_log = (log.nil? ? JourneyLog.new : log)
     end
 
     def top_up(money)
@@ -15,19 +17,25 @@ class OysterCard
         @balance += money
     end
 
-    def touch_in(station, journey=nil)
+    def touch_in(station)
         raise "Insufficient funds for journey, please top up card" if @balance < @@MIN_BALANCE
-        journey.nil? ? @current_journey = Journey.new(station) : @current_journey = journey
+        was_in_journey_already = in_journey?
+        @journey_log.start(station)
+        deduct(calculate_fare) if was_in_journey_already
+        # have to save in_journey status before starting journey because starting journey changes in_journey state
     end
 
     def touch_out(station)
-        add_journey(station)
-        deduct_correct_fare
-        @current_journey = nil
+        @journey_log.finish(station)
+        deduct(calculate_fare)
     end
 
     def in_journey?
-        not @current_journey.nil?
+        @journey_log.in_journey?
+    end
+
+    def journeys
+        @journey_log.journeys
     end
 
     private
@@ -36,11 +44,15 @@ class OysterCard
         @balance -= money
     end
 
-    def deduct_correct_fare
-        deduct(@current_journey.nil? ? @@PENALTY_CHARGE : @current_journey.fare)
+    def calculate_if_penalty(journey)
+        journey["entry_point"].nil? || journey["exit_point"].nil? ? 5 : 0
+        # if either entry_station or exit_station are empty, charges £6 penalty
     end
 
-    def add_journey(exit_point)
-        @journeys << (@current_journey.nil? ? {"entry_point" => nil, "exit_point" => exit_point} : @current_journey.end_journey(exit_point))
+    def calculate_fare
+        journey = @journey_log.last_journey
+        calculate_if_penalty(journey) + journey["fare"]
+        # total charge = penalty + base fare
     end
+    
 end
