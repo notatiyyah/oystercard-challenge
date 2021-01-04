@@ -2,20 +2,21 @@ require "journey.rb"
 
 class JourneyLog
     attr_reader :journeys
-    def initialize
+    @@double_journey = ->(station=nil) { return @journey.nil? ? Journey.new(station) : @journey.new(station) }
+    # If there is a double, use that, else use actual class
+    def initialize(journey=nil)
         @journeys = []
+        @journey = journey
+        # Use double for testing
     end
 
-    def start(station, journey=nil)
-        if in_journey?
-            Journey.new(station)
-            save_and_reset
-        end
-        @current_journey = (journey.nil? ? Journey.new(station) : journey.new(station))
+    def start(station)
+        save_and_reset if in_journey?
+        @current_journey = @@double_journey.call(station)
     end
 
     def finish(station)
-        @current_journey = Journey.new if @current_journey.nil?
+        @current_journey = @@double_journey.call if @current_journey.nil?
         # creates a new journey if journey 'finishes' without starting
         @current_journey.end_journey(station)
         save_and_reset
